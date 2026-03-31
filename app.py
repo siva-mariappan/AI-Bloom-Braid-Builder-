@@ -7,7 +7,30 @@ import io
 import os
 import json
 import tempfile
+import threading
+import http.server
 from dotenv import load_dotenv
+
+# -----------------------------------
+# Background static file server (serves index.html on port 8502)
+# -----------------------------------
+_HTML_PORT = 8502
+
+class _ReusableHTTPServer(http.server.HTTPServer):
+    allow_reuse_address = True
+
+def _start_static_server():
+    handler = http.server.SimpleHTTPRequestHandler
+    try:
+        server = _ReusableHTTPServer(("", _HTML_PORT), handler)
+        server.serve_forever()
+    except OSError:
+        pass  # port already in use, skip
+
+if "static_server_started" not in st.session_state:
+    t = threading.Thread(target=_start_static_server, daemon=True)
+    t.start()
+    st.session_state.static_server_started = True
 
 # -----------------------------------
 # Config
@@ -69,101 +92,257 @@ st.set_page_config(
 # -----------------------------------
 st.markdown("""
 <style>
-    .main-title {
-        text-align: center;
-        padding: 0.5rem 0 1.5rem 0;
-        border-bottom: 2px solid #f0f2f6;
-        margin-bottom: 1.5rem;
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    html, body, [class*="css"], .stMarkdown, .stRadio, .stSelectbox,
+    .stCheckbox, .stButton, .stFileUploader, .stDownloadButton {
+        font-family: 'Poppins', sans-serif !important;
     }
-    .main-title h1 {
-        font-size: 2.2rem;
-        margin-bottom: 0.25rem;
-    }
-    .main-title p {
-        color: #888;
-        font-size: 0.95rem;
+
+    /* App background */
+    .stApp {
+        background: linear-gradient(160deg, #fff8f0 0%, #f0faf0 100%);
     }
 
     [data-testid="stAppViewBlockContainer"] {
-        padding-top: 1rem;
+        padding-top: 0 !important;
     }
 
-    .section-label {
-        font-size: 0.75rem;
+    /* ── Header ── */
+    .main-header {
+        background: linear-gradient(135deg, #e65100 0%, #f57c00 45%, #43a047 100%);
+        padding: 2.5rem 2rem 2rem;
+        border-radius: 0 0 28px 28px;
+        margin: -1rem -4rem 2rem -4rem;
+        text-align: center;
+        box-shadow: 0 6px 24px rgba(245,124,0,0.22);
+        position: relative;
+    }
+    .bloom-shop-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        background: rgba(255,255,255,0.18);
+        color: #fff !important;
+        text-decoration: none !important;
+        padding: 0.4rem 1.1rem;
+        border-radius: 20px;
+        font-size: 0.82rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #999;
-        margin-bottom: 0.75rem;
+        border: 1.5px solid rgba(255,255,255,0.45);
+        letter-spacing: 0.3px;
+        transition: background 0.2s, transform 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    .bloom-shop-btn:hover {
+        background: rgba(255,255,255,0.32);
+        transform: translateY(-1px);
+    }
+    .main-header h1 {
+        color: #fff;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 0.4rem 0;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    .main-header p {
+        color: rgba(255,255,255,0.92);
+        font-size: 0.95rem;
+        margin: 0;
+        font-weight: 400;
+        letter-spacing: 0.2px;
     }
 
+    /* ── Section labels ── */
+    .section-label {
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #f57c00;
+        margin-bottom: 0.6rem;
+    }
+
+    /* ── Panel cards ── */
+    .panel-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.25rem 1.4rem;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.07);
+        margin-bottom: 1rem;
+        border: 1px solid #fff3e0;
+    }
+
+    /* ── Radio pills ── */
+    div[data-testid="stRadio"] > div {
+        gap: 0.6rem;
+    }
+    div[data-testid="stRadio"] label {
+        background: #f5f5f5;
+        border-radius: 22px !important;
+        padding: 0.45rem 1.3rem !important;
+        border: 2px solid transparent !important;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    div[data-testid="stRadio"] label:hover {
+        background: #fff3e0;
+        border-color: #ffb74d !important;
+    }
+
+    /* ── Selectbox ── */
+    div[data-testid="stSelectbox"] > div > div {
+        border-radius: 10px !important;
+        border-color: #ffe0b2 !important;
+    }
+
+    /* ── Generate button ── */
+    div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, #f57c00 0%, #e65100 100%) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.3px;
+        padding: 0.65rem 1.5rem !important;
+        box-shadow: 0 4px 16px rgba(245,124,0,0.35) !important;
+        transition: all 0.25s ease !important;
+    }
+    div[data-testid="stButton"] > button:hover {
+        box-shadow: 0 6px 22px rgba(245,124,0,0.48) !important;
+        transform: translateY(-1px);
+    }
+
+    /* ── Download buttons ── */
+    div[data-testid="stDownloadButton"] > button {
+        border-radius: 10px !important;
+        font-weight: 500 !important;
+        border: 2px solid #e0e0e0 !important;
+        transition: all 0.2s ease !important;
+        background: #fff !important;
+    }
+    div[data-testid="stDownloadButton"] > button:hover {
+        border-color: #f57c00 !important;
+        color: #f57c00 !important;
+        background: #fff3e0 !important;
+    }
+
+    /* ── Result image ── */
+    .generated-img img {
+        border-radius: 14px;
+        border: 1.5px solid #ffe0b2;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.09);
+    }
+
+    /* ── Placeholder ── */
     .output-placeholder {
+        background: #fff;
+        border: 2.5px dashed #ffe0b2;
+        border-radius: 18px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 400px;
-        color: #bbb;
+        height: 430px;
         text-align: center;
     }
-    .output-placeholder .icon {
-        font-size: 3rem;
-        margin-bottom: 0.5rem;
-    }
-    .output-placeholder p {
-        font-size: 0.9rem;
-    }
+    .output-placeholder .icon { font-size: 4rem; margin-bottom: 0.75rem; opacity: 0.55; }
+    .output-placeholder .label { font-size: 1rem; font-weight: 600; color: #ccc; }
+    .output-placeholder .hint  { font-size: 0.78rem; color: #ddd; margin-top: 0.3rem; }
 
-    .generated-img img {
-        border-radius: 12px;
-        border: 1px solid #e0e0e0;
-    }
-
-    .stDownloadButton > button {
-        width: 100%;
-    }
-
+    /* ── Flower count table ── */
     .flower-count-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 0.5rem;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
     .flower-count-table th {
         text-align: left;
-        padding: 0.5rem 0.75rem;
-        font-size: 0.8rem;
-        font-weight: 600;
+        padding: 0.7rem 1rem;
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #888;
-        border-bottom: 2px solid #555;
+        letter-spacing: 0.1em;
+        color: #fff;
+        background: linear-gradient(135deg, #f57c00, #e65100);
     }
+    .flower-count-table th:last-child { text-align: center; }
     .flower-count-table td {
-        padding: 0.6rem 0.75rem;
-        font-size: 0.9rem;
-        border-bottom: 1px solid #444;
-        color: inherit;
+        padding: 0.65rem 1rem;
+        font-size: 0.88rem;
+        border-bottom: 1px solid #fff3e0;
+        color: #444;
     }
-    .flower-count-table tr:last-child td {
-        border-bottom: none;
-    }
+    .flower-count-table tr:last-child td { border-bottom: none; }
+    .flower-count-table tr:not(.total-row):hover td { background: #fff8f0; }
     .flower-count-table .count-badge {
         display: inline-block;
-        background: #2e7d32;
+        background: linear-gradient(135deg, #43a047, #2e7d32);
         color: #fff;
         font-weight: 700;
-        font-size: 0.8rem;
-        padding: 0.15rem 0.55rem;
-        border-radius: 10px;
-        min-width: 1.5rem;
+        font-size: 0.78rem;
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        min-width: 1.8rem;
         text-align: center;
     }
     .flower-count-table .total-row td {
         font-weight: 700;
         font-size: 0.95rem;
-        border-top: 2px solid #555;
-        padding-top: 0.7rem;
+        background: #fff3e0;
+        border-top: 2px solid #f57c00;
+        color: #e65100;
     }
+
+    /* ── Flower spinner ── */
+    @keyframes flowerFold {
+        0%   { transform: rotate(0deg)   scale(1);    }
+        25%  { transform: rotate(90deg)  scale(0.45); }
+        50%  { transform: rotate(180deg) scale(1);    }
+        75%  { transform: rotate(270deg) scale(0.45); }
+        100% { transform: rotate(360deg) scale(1);    }
+    }
+    .flower-spinner-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 430px;
+    }
+    .flower-spin {
+        font-size: 5.5rem;
+        display: inline-block;
+        animation: flowerFold 1.4s ease-in-out infinite;
+        transform-origin: center;
+    }
+    .flower-spin-label {
+        margin-top: 1.2rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #f57c00;
+        letter-spacing: 0.3px;
+    }
+    .flower-spin-sub {
+        font-size: 0.78rem;
+        color: #bbb;
+        margin-top: 0.3rem;
+    }
+
+    /* ── Divider ── */
+    hr { border-color: #fff3e0 !important; margin: 1rem 0 !important; }
+
+    /* ── Success alert ── */
+    div[data-testid="stAlert"] { border-radius: 10px !important; }
+
+    /* ── Checkbox ── */
+    div[data-testid="stCheckbox"] label { font-size: 0.9rem; font-weight: 500; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -300,9 +479,10 @@ def build_pdf(image_bytes, flower_counts):
 # Header
 # -----------------------------------
 st.markdown(
-    '<div class="main-title">'
-    "<h1>🌸 Bloom Braid Builder</h1>"
-    "<p><b>AI Based System for flower recognition and intelligent Garland Design</b></p>"
+    '<div class="main-header">'
+    '<a href="http://localhost:8502/index.html" target="_blank" class="bloom-shop-btn">🛍️ Bloom Shop</a>'
+    "<h1>Bloom Braid Builder</h1>"
+    "<p><b>AI Based System for Flower Recognition and Intelligent Garland Design</b></p>"
     "</div>",
     unsafe_allow_html=True,
 )
@@ -340,7 +520,7 @@ with left_col:
 
     st.markdown("---")
 
-    st.markdown('<div class="section-label">Flower Images</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">🌸 &nbsp;Flower Images</div>', unsafe_allow_html=True)
     st.markdown('<p style="font-size:0.85rem; color:#aaa; margin-top:-0.25rem; margin-bottom:0.5rem;"><b>Upload up to 5 flower images, choose garland or bouquet, and generate</b></p>', unsafe_allow_html=True)
 
     uploaded_files = st.file_uploader(
@@ -369,31 +549,41 @@ with left_col:
 
 # ============ RIGHT PANEL — Output ============
 with right_col:
-    st.markdown('<div class="section-label">Result</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">✨ &nbsp;Result</div>', unsafe_allow_html=True)
 
     if "result_image_bytes" not in st.session_state:
         st.session_state.result_image_bytes = None
     if "flower_counts" not in st.session_state:
         st.session_state.flower_counts = None
 
+    top_slot = st.empty()
+
     if generate_clicked:
         if not uploaded_files:
             st.warning("Upload at least one flower image first.")
             st.stop()
 
-        with st.spinner(f"Creating your {arrangement_type.lower()}..."):
+        # Show flower fold animation while generating
+        top_slot.markdown(
+            '<div class="flower-spinner-wrap">'
+            '<div class="flower-spin">🌼</div>'
+            '<div class="flower-spin-label">Creating your arrangement…</div>'
+            '<div class="flower-spin-sub">This may take a few seconds</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
-            image_files = []
-            for file in uploaded_files:
-                file.seek(0)
-                image_files.append(file)
+        image_files = []
+        for file in uploaded_files:
+            file.seek(0)
+            image_files.append(file)
 
-            num_flowers = len(uploaded_files)
-            leaf_instruction = GREENLEAF_PROMPT if add_greenleaf else NO_GREENLEAF_PROMPT
+        num_flowers = len(uploaded_files)
+        leaf_instruction = GREENLEAF_PROMPT if add_greenleaf else NO_GREENLEAF_PROMPT
 
-            if arrangement_type == "Garland":
-                shape_desc = GARLAND_SHAPES[shape]
-                prompt = f"""Generate exactly ONE realistic photographic flower garland.
+        if arrangement_type == "Garland":
+            shape_desc = GARLAND_SHAPES[shape]
+            prompt = f"""Generate exactly ONE realistic photographic flower garland.
 
 Shape: {shape_desc}
 
@@ -415,9 +605,9 @@ Other rules:
 6. Transparent background (PNG). No other objects, no text, no extra decorations.
 7. Center the garland in the frame with comfortable margins on all sides.
 """
-            else:
-                shape_desc = BOUQUET_SHAPES[shape]
-                prompt = f"""Generate exactly ONE realistic photographic flower bouquet.
+        else:
+            shape_desc = BOUQUET_SHAPES[shape]
+            prompt = f"""Generate exactly ONE realistic photographic flower bouquet.
 
 Style: {shape_desc}
 
@@ -439,25 +629,35 @@ Other rules:
 6. Center the bouquet in the frame with comfortable margins on all sides.
 """
 
-            result = client.images.edit(
-                model="gpt-image-1",
-                image=image_files,
-                prompt=prompt,
-                size="1024x1024",
-                background="transparent",
+        result = client.images.edit(
+            model="gpt-image-1",
+            image=image_files,
+            prompt=prompt,
+            size="1024x1024",
+            background="transparent",
+        )
+
+        image_base64 = result.data[0].b64_json
+        st.session_state.result_image_bytes = base64.b64decode(image_base64)
+
+        # Update animation for counting phase
+        top_slot.markdown(
+            '<div class="flower-spinner-wrap">'
+            '<div class="flower-spin">🌸</div>'
+            '<div class="flower-spin-label">Counting flowers…</div>'
+            '<div class="flower-spin-sub">Analyzing the arrangement</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+        try:
+            st.session_state.flower_counts = count_flowers_in_image(
+                st.session_state.result_image_bytes
             )
+        except Exception:
+            st.session_state.flower_counts = None
 
-            image_base64 = result.data[0].b64_json
-            st.session_state.result_image_bytes = base64.b64decode(image_base64)
-
-        # Count flowers in the generated image
-        with st.spinner("Counting flowers..."):
-            try:
-                st.session_state.flower_counts = count_flowers_in_image(
-                    st.session_state.result_image_bytes
-                )
-            except Exception:
-                st.session_state.flower_counts = None
+        top_slot.empty()
 
     # Display result
     if st.session_state.result_image_bytes:
@@ -471,7 +671,7 @@ Other rules:
         # Flower count table
         if st.session_state.flower_counts:
             st.markdown("---")
-            st.markdown('<div class="section-label">Flower Count</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-label">📊 &nbsp;Flower Count</div>', unsafe_allow_html=True)
 
             total = 0
             table_html = '<table class="flower-count-table">'
@@ -496,7 +696,7 @@ Other rules:
 
         # Download buttons
         st.markdown("---")
-        st.markdown('<div class="section-label">Download</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-label">⬇️ &nbsp;Download</div>', unsafe_allow_html=True)
 
         dl_col1, dl_col2 = st.columns(2)
 
@@ -522,10 +722,11 @@ Other rules:
                 use_container_width=True,
             )
     else:
-        st.markdown(
+        top_slot.markdown(
             '<div class="output-placeholder">'
             '<div class="icon">🌼</div>'
-            "<p>Your generated image will appear here</p>"
+            '<div class="label">Your creation will appear here</div>'
+            '<div class="hint">Upload flowers → Choose shape → Click Generate</div>'
             "</div>",
             unsafe_allow_html=True,
         )

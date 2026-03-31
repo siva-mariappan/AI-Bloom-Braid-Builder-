@@ -1,0 +1,194 @@
+================================================================
+  AI-BASED FLOWER RECOGNITION AND INTELLIGENT GARLAND DESIGN
+                    Project Presentation
+================================================================
+
+PROJECT TITLE: Bloom Braid Builder
+DESCRIPTION  : An AI-powered web application that takes user-uploaded
+               flower photos, recognizes the flower type using a custom
+               trained deep learning model, and generates intelligent
+               garland or bouquet arrangement plans with automatic
+               flower counting and PDF export.
+
+
+----------------------------------------------------------------
+TECHNOLOGIES USED
+----------------------------------------------------------------
+
+1. FRONTEND / UI FRAMEWORK
+   - Streamlit (v1.40+)
+     * Multi-column responsive layout
+     * Custom CSS with Poppins font, gradient theme
+     * Radio pills, styled buttons, download buttons
+     * Session state management for result persistence
+     * Animated flower spinner during generation
+
+2. AI / MACHINE LEARNING
+   - Custom Trained Flower Classifier  (Flower Recognition)
+     * Architecture  : MobileNetV2 (Transfer Learning, PyTorch)
+     * Dataset       : Custom dataset — datasets/train/{jasmine, marigold, rose}
+     * Training      : 40 epochs + 10 fine-tuning epochs on top layers
+     * Augmentation  : Random crop, flip, rotation, color jitter
+     * Output        : Flower name + confidence score per uploaded image
+     * Model file    : model/flower_classifier.pth
+     * Classes file  : model/classes.json
+     * Fallback      : Rule-based scoring (color, petal count, circularity)
+                       used when model file is not yet generated
+
+   - Conditional GAN  (Flower Image Generation)
+     * Generator     : Noise + class embedding → 3×64×64 image
+     * Discriminator : Image + class embedding → real/fake score
+     * Purpose       : Learns class-conditioned flower image generation
+     * File          : gan/conditional_gan.py
+
+3. FLOWER RECOGNITION PIPELINE
+   - utils/classifier.py
+     * Loads trained MobileNetV2 model for inference
+     * Returns top predicted flower class and confidence
+     * Falls back to rule-based scoring if model is unavailable
+   - utils/edge_detection.py
+     * Detects flower edges using OpenCV
+   - utils/color_features.py
+     * Extracts dominant color features from flower images
+   - utils/background_removal.py
+     * Removes background from uploaded flower images
+
+4. GARLAND DESIGN & VISUALIZATION
+   - utils/garland_math.py
+     * Estimates required flower count for the chosen shape
+   - utils/pattern_generator.py
+     * Generates repeating flower patterns for the garland
+   - utils/garland_visualizer.py
+     * Renders the garland or bouquet arrangement visually
+   - Supported Garland Shapes  : U Shape, Straight, Heart Shape, Oval Shape
+   - Supported Bouquet Styles  : Round Bouquet, Cascade Bouquet, Hand-tied Bouquet
+   - Toggle green leaf filling between flowers
+
+5. IMAGE PROCESSING
+   - Pillow (PIL v11.1.0)
+     * Opening and displaying images
+     * RGBA to RGB conversion for PDF compatibility
+     * Base64 encoding/decoding
+   - OpenCV (cv2)
+     * Edge detection, contour analysis, petal count estimation
+     * Circularity calculation for rule-based fallback classifier
+   - NumPy
+     * Array operations for color feature extraction
+
+6. PDF GENERATION
+   - utils/pdf_export.py  +  fpdf2 (v2.8.4)
+     * Embeds the generated arrangement image
+     * Renders a formatted flower count table
+     * Produces a downloadable branded PDF report
+
+7. BACKEND / SERVER
+   - Python http.server (built-in)
+     * Serves static files (index.html / Bloom Shop) on port 8502
+     * Runs as a background daemon thread alongside Streamlit
+   - python-dotenv
+     * Secure environment variable loading from .env file
+
+8. PYTHON STANDARD LIBRARIES
+   - base64   : encoding images for display and transfer
+   - io       : in-memory byte stream handling
+   - os       : environment variables and file paths
+   - json     : loading class labels and model metadata
+   - tempfile : temporary file handling for PDF image embedding
+   - threading: running the static file server concurrently
+   - ssl      : SSL certificate fix for macOS Python 3.14+
+
+
+----------------------------------------------------------------
+CUSTOM MODEL TRAINING  (train_model.py)
+----------------------------------------------------------------
+
+  Dataset Structure:
+    datasets/train/
+      ├── jasmine/   (flower images)
+      ├── marigold/  (flower images)
+      └── rose/      (flower images)
+
+  Training Configuration:
+    - Base model     : MobileNetV2 (pretrained on ImageNet)
+    - Backbone       : Frozen during initial training
+    - Classifier head: Dropout(0.3) + Linear(1280 → num_classes)
+    - Optimizer      : Adam  |  LR: 1e-3
+    - Scheduler      : StepLR (step=15, gamma=0.3)
+    - Epochs         : 40 (initial) + 10 (fine-tune top 3 layers)
+    - Batch size     : 8  |  Val split: 20%
+    - Device support : MPS (Apple Silicon) / CUDA / CPU
+
+  Data Augmentation:
+    - Resize → Random Crop (224×224)
+    - Random Horizontal & Vertical Flip
+    - Random Rotation (±30°)
+    - Color Jitter (brightness, contrast, saturation, hue)
+    - ImageNet Normalization
+
+  Output:
+    - model/flower_classifier.pth   (saved best validation weights)
+    - model/classes.json            (class label list)
+
+
+----------------------------------------------------------------
+KEY FEATURES
+----------------------------------------------------------------
+
+  - Upload up to 5 flower reference images (PNG/JPG)
+  - Automatic flower type recognition using custom MobileNetV2 model
+  - Choose arrangement type: Garland or Bouquet
+  - Choose from 4 garland shapes and 3 bouquet styles
+  - Toggle green leaf filling between flowers
+  - Live preview of uploaded flower images
+  - Animated loading spinner during AI generation
+  - Post-generation flower count table (per type + total)
+  - Download result as PNG or PDF
+  - Bloom Shop page served as a companion static site (port 8502)
+
+
+----------------------------------------------------------------
+SYSTEM ARCHITECTURE
+----------------------------------------------------------------
+
+  User uploads flower images
+           │
+           ▼
+  Background Removal (utils/background_removal.py)
+           │
+           ▼
+  Flower Recognition  ──►  MobileNetV2 Classifier
+  (utils/classifier.py)     (model/flower_classifier.pth)
+           │                  → flower name + confidence
+           ▼
+  Color & Edge Feature Extraction
+  (utils/color_features.py, utils/edge_detection.py)
+           │
+           ▼
+  Pattern & Garland Math
+  (utils/pattern_generator.py, utils/garland_math.py)
+  (shape + leaf + flower count instructions)
+           │
+           ▼
+  Garland / Bouquet Visualizer
+  (utils/garland_visualizer.py)  ──► Generated arrangement image
+           │
+           ▼
+  Flower Count Table + Download buttons
+  (PNG download / PDF via utils/pdf_export.py + fpdf2)
+
+
+----------------------------------------------------------------
+DEPENDENCIES  (requirements.txt)
+----------------------------------------------------------------
+
+  streamlit>=1.40.0
+  torch
+  torchvision
+  Pillow==11.1.0
+  opencv-python
+  numpy
+  fpdf2==2.8.4
+  python-dotenv==1.0.1
+
+
+================================================================

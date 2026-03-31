@@ -1,0 +1,41 @@
+================================================================
+  HOW TO RUN — Bloom Braid Builder
+================================================================
+
+PREREQUISITES
+----------------------------------------------------------------
+- Python 3.9 or higher
+- An OpenAI API key with access to gpt-image-1 and gpt-4o models
+
+STEP 1: CREATE A VIRTUAL ENVIRONMENT
+----------------------------------------------------------------
+  cd garland
+  python -m venv venv
+
+STEP 2: ACTIVATE THE VIRTUAL ENVIRONMENT
+----------------------------------------------------------------
+  macOS / Linux:
+    source venv/bin/activate
+
+  Windows:
+    venv\Scripts\activate
+
+STEP 3: INSTALL DEPENDENCIES
+----------------------------------------------------------------
+  pip install -r requirements.txt
+
+STEP 4: SET UP THE ENVIRONMENT FILE
+----------------------------------------------------------------
+  Create a .env file in the project root with your OpenAI API key:
+
+    OPENAI_API_KEY=your-openai-api-key-here
+
+STEP 5: RUN THE APPLICATION
+----------------------------------------------------------------
+  streamlit run app.py
+
+  The app will open in your browser at:
+    - Streamlit App  : http://localhost:8501
+    - Bloom Shop Page: http://localhost:8502
+
+================================================================

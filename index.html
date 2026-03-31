@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Shop — Flowers & Garlands</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:     #f57c00;
+      --orange-dark:#e65100;
+      --green:      #43a047;
+      --green-dark: #2e7d32;
+      --cream:      #fff8f0;
+      --white:      #ffffff;
+      --text:       #333333;
+      --muted:      #777777;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #ffe0b2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      height: 68px;
+      box-shadow: 0 2px 12px rgba(245,124,0,0.08);
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--orange-dark), var(--orange), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: var(--white) !important;
+      padding: 0.5rem 1.3rem;
+      border-radius: 22px;
+      font-weight: 600 !important;
+      box-shadow: 0 3px 12px rgba(245,124,0,0.35);
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(245,124,0,0.45) !important;
+      color: var(--white) !important;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      background: linear-gradient(135deg, #e65100 0%, #f57c00 45%, #43a047 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 6% 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.4rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.3);
+      margin-bottom: 1.4rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.15);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 span {
+      display: block;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 0.3rem;
+    }
+
+    .hero-desc {
+      color: rgba(255,255,255,0.88);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 540px;
+      margin: 0 auto 2.4rem;
+    }
+
+    .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: #fff;
+      color: var(--orange-dark);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.85rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.16); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.4);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+    .hero-flowers {
+      margin-top: 3.5rem;
+      font-size: 3rem;
+      letter-spacing: 0.5rem;
+      opacity: 0.8;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+    /* ── WAVE ── */
+    .wave { display: block; background: var(--cream); }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 5rem 6%; }
+
+    .section-header { text-align: center; margin-bottom: 3.5rem; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      background: #fff3e0;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 0.9rem;
+    }
+    .section-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .section-header p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 0.7rem;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.65;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      background: var(--white);
+      padding: 3rem 6%;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      border-top: 1px solid #ffe0b2;
+      border-bottom: 1px solid #ffe0b2;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--orange-dark), var(--orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; margin-top: 0.2rem; }
+
+    /* ── PRODUCTS ── */
+    .products { background: var(--cream); }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .product-card {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+      border: 1px solid #fff3e0;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(245,124,0,0.16);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+    }
+    .badge-new  { background: #e8f5e9; color: var(--green-dark); }
+    .badge-hot  { background: #fff3e0; color: var(--orange-dark); }
+    .badge-sale { background: #fce4ec; color: #c62828; }
+
+    .product-body { padding: 1.2rem 1.4rem 1.5rem; }
+    .product-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
+    .product-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 1rem; }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .product-price {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--orange-dark);
+    }
+    .product-price span {
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--muted);
+      text-decoration: line-through;
+      margin-left: 0.4rem;
+    }
+
+    .btn-add {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.5rem 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 3px 10px rgba(245,124,0,0.3);
+    }
+    .btn-add:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(245,124,0,0.45); }
+
+    /* ── SERVICES ── */
+    .services { background: var(--white); }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .service-card {
+      background: var(--cream);
+      border-radius: 20px;
+      padding: 2rem 1.8rem;
+      border: 1px solid #ffe0b2;
+      transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(245,124,0,0.12);
+      background: var(--white);
+    }
+
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .icon-orange { background: #fff3e0; }
+    .icon-green  { background: #e8f5e9; }
+    .icon-pink   { background: #fce4ec; }
+    .icon-purple { background: #f3e5f5; }
+
+    .service-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .service-desc  { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── HOW IT WORKS ── */
+    .how { background: linear-gradient(160deg, #fff8f0 0%, #f0faf0 100%); }
+
+    .steps {
+      display: flex;
+      gap: 0;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .step {
+      flex: 1;
+      min-width: 180px;
+      max-width: 240px;
+      text-align: center;
+      padding: 0 1rem;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 28px;
+      right: -18px;
+      font-size: 1.4rem;
+      color: #ffcc80;
+    }
+
+    .step-circle {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: #fff;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 16px rgba(245,124,0,0.35);
+    }
+
+    .step h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step p  { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { background: var(--cream); }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.6rem;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 1.6rem;
+      border: 1px solid #ffe0b2;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    }
+
+    .stars { color: #ffa726; font-size: 1rem; margin-bottom: 0.8rem; letter-spacing: 2px; }
+    .testimonial-text { font-size: 0.88rem; line-height: 1.65; color: #555; margin-bottom: 1.1rem; font-style: italic; }
+
+    .reviewer {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .reviewer-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff3e0;
+    }
+    .reviewer-name { font-weight: 700; font-size: 0.88rem; }
+    .reviewer-role { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--orange-dark) 0%, var(--orange) 45%, var(--green) 100%);
+      padding: 5rem 6%;
+      text-align: center;
+      color: #fff;
+    }
+    .cta-banner h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; margin-bottom: 0.8rem; }
+    .cta-banner p  { font-size: 1rem; opacity: 0.9; margin-bottom: 2rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #1a1a1a;
+      color: rgba(255,255,255,0.75);
+      padding: 4rem 6% 2rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand .nav-logo { font-size: 1.6rem; }
+    .footer-brand p { font-size: 0.85rem; line-height: 1.7; margin-top: 0.8rem; color: rgba(255,255,255,0.55); }
+
+    .footer-col h4 { color: #fff; font-size: 0.88rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-col ul a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.84rem; transition: color 0.2s; }
+    .footer-col ul a:hover { color: var(--orange); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer-bottom p { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+
+    .social-links { display: flex; gap: 0.8rem; }
+    .social-links a {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .social-links a:hover { background: var(--orange); transform: translateY(-2px); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .stats { gap: 1.5rem; }
+      .steps { gap: 2rem; }
+      .step:not(:last-child)::after { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .footer-brand { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-buttons { flex-direction: column; align-items: center; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Bloom Shop</a>
+    <ul class="nav-links">
+      <li><a href="#products">Shop</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#contact" class="nav-cta">Order Now</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Fresh · Handcrafted · Same-Day Delivery</div>
+      <h1>
+        Nature's Finest Blooms
+        <span>Garlands &bull; Bouquets &bull; Arrangements</span>
+      </h1>
+      <p class="hero-desc">
+        Exquisite fresh-flower garlands and bouquets crafted with love.
+        From traditional torans to modern cascade bouquets — we bring every
+        celebration to life with the fragrance and colour of real flowers.
+      </p>
+      <div class="hero-buttons">
+        <a href="#products" class="btn-primary">Explore Collection</a>
+        <a href="#services" class="btn-secondary">Our Services</a>
+      </div>
+      <div class="hero-flowers">🌸 🌺 🌼 🌻 🌹</div>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">1,200+</div>
+      <div class="stat-label">Happy Customers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">50+</div>
+      <div class="stat-label">Flower Varieties</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Years of Expertise</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.9 ★</div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="products">
+    <div class="section-header">
+      <div class="section-tag">Our Collection</div>
+      <h2>Fresh Flowers &amp; Arrangements</h2>
+      <p>Handpicked blooms assembled the same day — from single stems to elaborate garlands for every occasion.</p>
+    </div>
+
+    <div class="product-grid">
+
+      <!-- Rose Garland -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">
+          🌹
+          <div class="product-badge badge-hot">Bestseller</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Red Rose Garland</div>
+          <div class="product-desc">Classic U-shaped toran with deep red roses. Perfect for weddings and entrances.</div>
+          <div class="product-footer">
+            <div class="product-price">₹349 <span>₹450</span></div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jasmine Garland -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#f9fbe7,#dcedc8)">
+          🌸
+          <div class="product-badge badge-new">New</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Malligai Jasmine Garland</div>
+          <div class="product-desc">Fragrant malligai (jasmine) garland with lush green leaves — a South Indian classic.</div>
+          <div class="product-footer">
+            <div class="product-price">₹199</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sunflower Bouquet -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#fffde7,#fff9c4)">
+          🌻
+          <div class="product-badge badge-hot">Popular</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Sunflower Round Bouquet</div>
+          <div class="product-desc">Bright dome-shaped bouquet of fresh sunflowers. Spreads sunshine at any event.</div>
+          <div class="product-footer">
+            <div class="product-price">₹499 <span>₹599</span></div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lotus Arrangement -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#fce4ec,#ede7f6)">
+          🪷
+          <div class="product-badge badge-new">New</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Lotus Heart Garland</div>
+          <div class="product-desc">Elegant heart-shaped lotus garland, ideal for pooja rooms and auspicious occasions.</div>
+          <div class="product-footer">
+            <div class="product-price">₹699</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pitchi Bouquet -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9)">
+          🌼
+          <div class="product-badge badge-sale">Sale</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Pitchi Cascade Bouquet</div>
+          <div class="product-desc">Graceful waterfall bouquet of pitchi flowers with eucalyptus foliage for a bridal look.</div>
+          <div class="product-footer">
+            <div class="product-price">₹549 <span>₹750</span></div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mixed Oval Garland -->
+      <div class="product-card">
+        <div class="product-img" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2)">
+          🌺
+          <div class="product-badge badge-hot">Trending</div>
+        </div>
+        <div class="product-body">
+          <div class="product-name">Mixed Oval Garland</div>
+          <div class="product-desc">Vibrant oval-shaped garland mixing rose, jasmine and marigold for colourful celebrations.</div>
+          <div class="product-footer">
+            <div class="product-price">₹449</div>
+            <button class="btn-add">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="section-header">
+      <div class="section-tag">What We Offer</div>
+      <h2>Our Floral Services</h2>
+      <p>From AI-powered custom designs to bulk event orders — we have a service tailored for every need.</p>
+    </div>
+
+    <div class="service-grid">
+
+      <div class="service-card">
+        <div class="service-icon icon-orange">🤖</div>
+        <div class="service-title">AI Garland Designer</div>
+        <div class="service-desc">Upload your favourite flower photos and let our AI generate photorealistic garland or bouquet designs before you order.</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon icon-green">💍</div>
+        <div class="service-title">Wedding Packages</div>
+        <div class="service-desc">Full-venue floral décor including mandap garlands, bridal bouquets, table centrepieces and entrance torans.</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon icon-pink">🛵</div>
+        <div class="service-title">Same-Day Delivery</div>
+        <div class="service-desc">Order by noon and receive fresh blooms at your doorstep the very same day — anywhere in the city.</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon icon-purple">🎁</div>
+        <div class="service-title">Custom Gift Bouquets</div>
+        <div class="service-desc">Personalised hand-tied bouquets with a greeting card. Choose your blooms, colours, and style for any occasion.</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon icon-orange">🏛️</div>
+        <div class="service-title">Pooja &amp; Temple Décor</div>
+        <div class="service-desc">Traditional garlands and floral decorations for religious ceremonies, housewarming poojas, and festivals.</div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon icon-green">📦</div>
+        <div class="service-title">Bulk &amp; Corporate Orders</div>
+        <div class="service-desc">Discounted pricing for large event orders, corporate gifting, and regular weekly subscriptions.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="section-header">
+      <div class="section-tag">The Process</div>
+      <h2>How It Works</h2>
+      <p>Getting your perfect floral arrangement is simple — just four easy steps.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-circle">🌸</div>
+        <h3>Choose Flowers</h3>
+        <p>Pick your favourite blooms from our wide variety or upload your own reference images.</p>
+      </div>
+      <div class="step">
+        <div class="step-circle">✨</div>
+        <h3>Design It</h3>
+        <p>Select the shape — U-shape, round bouquet, heart, cascade — and let us craft the perfect design.</p>
+      </div>
+      <div class="step">
+        <div class="step-circle">🎀</div>
+        <h3>We Craft It</h3>
+        <p>Our skilled artisans hand-assemble your arrangement with fresh blooms and natural foliage.</p>
+      </div>
+      <div class="step">
+        <div class="step-circle">🛵</div>
+        <h3>Fast Delivery</h3>
+        <p>Your creation is carefully packaged and delivered fresh right to your door.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="section-header">
+      <div class="section-tag">Customer Love</div>
+      <h2>What Our Customers Say</h2>
+      <p>Thousands of happy customers trust Bloom Shop for their special moments.</p>
+    </div>
+
+    <div class="testimonial-grid">
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-text">"The malligai garland was absolutely fresh and fragrant — exactly like what you'd get at a traditional flower market, but delivered to my door!"</div>
+        <div class="reviewer">
+          <div class="reviewer-avatar">👩</div>
+          <div>
+            <div class="reviewer-name">Priya Suresh</div>
+            <div class="reviewer-role">Wedding Customer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-text">"Used the AI designer to preview my bridal bouquet before ordering. It looked exactly like the generated image — I was blown away!"</div>
+        <div class="reviewer">
+          <div class="reviewer-avatar">👰</div>
+          <div>
+            <div class="reviewer-name">Lakshmi Nair</div>
+            <div class="reviewer-role">Bride</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-text">"Ordered a bulk garland set for our temple festival. Delivered on time, every garland was perfectly made. Will definitely order again!"</div>
+        <div class="reviewer">
+          <div class="reviewer-avatar">🧑</div>
+          <div>
+            <div class="reviewer-name">Ramesh Kumar</div>
+            <div class="reviewer-role">Temple Trustee</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner" id="contact">
+    <h2>Ready to Bloom?</h2>
+    <p>Place your order today and receive the freshest flowers delivered with care and artistry.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="tel:+919876543210" class="btn-primary" style="background:#fff;color:var(--orange-dark);">📞 Call Us Now</a>
+      <a href="https://wa.me/919876543210" class="btn-secondary">💬 WhatsApp Order</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">Bloom Shop</a>
+        <p>Bringing the beauty and fragrance of fresh flowers to every home and celebration. Handcrafted with love since 2012.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#products">Garlands</a></li>
+          <li><a href="#products">Bouquets</a></li>
+          <li><a href="#products">Single Stems</a></li>
+          <li><a href="#products">Gift Sets</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">AI Designer</a></li>
+          <li><a href="#services">Wedding Décor</a></li>
+          <li><a href="#services">Pooja Flowers</a></li>
+          <li><a href="#services">Bulk Orders</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+919876543210">+91 98765 43210</a></li>
+          <li><a href="mailto:hello@bloomshop.in">hello@bloomshop.in</a></li>
+          <li><a href="#">Find Our Store</a></li>
+          <li><a href="#">Track My Order</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Bloom Shop. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#" title="Instagram">📸</a>
+        <a href="#" title="Facebook">📘</a>
+        <a href="#" title="WhatsApp">💬</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
